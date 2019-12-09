@@ -1,6 +1,6 @@
 import React from 'react';
 
-import './avatar.css';
+import './Avatar.css';
 
 const Avatar = props => {
   return (
