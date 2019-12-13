@@ -8,19 +8,20 @@ const Map = props => {
   const { center, zoom } = props;
 
   useEffect(() => {
-    new window.ol.Map({
-      target: mapRef.current.id,
-      layers: [
-        new window.ol.layer.Tile({
-          source: new window.ol.source.OSM()
-        })
-      ],
-      view: new window.ol.View({
-        center: window.ol.proj.fromLonLat([center.lng, center.lat]),
-        zoom: zoom
-      })
+    var platform = new window.H.service.Platform({
+      'apikey': 'MnbP1YI-LPPbjyLWVXxXkPejjlirjme__UvoPeMQXeU'
     });
-  }, [center, zoom]);
+    var defaultLayers = platform.createDefaultLayers();
+    
+    new window.H.Map(
+        document.getElementById('map'),
+        defaultLayers.vector.normal.map,
+        {
+          zoom,
+          center
+        });
+
+      }, [center, zoom]);
 
   return (
     <div

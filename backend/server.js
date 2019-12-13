@@ -1,20 +1,21 @@
-const express = require('express');
-const morgan = require('morgan');
+const express = require("express");
+const morgan = require("morgan");
+require("dotenv").config();
 
-const placesRoute = require('./routes/places-routes');
-const usersRoute = require('./routes/users-routes');
-const HttpError = require('./models/http-error');
+const connectDB = require("./db");
+const placesRoute = require("./routes/places-routes");
+const usersRoute = require("./routes/users-routes");
+const HttpError = require("./models/http-error");
 
 const app = express();
 
-app.use(morgan('dev'));
+app.use(morgan("dev"));
 app.use(express.json());
 
-
-app.use('/places', placesRoute);
-//app.use('/users', usersRoute);
+app.use("/places", placesRoute);
+app.use('/users', usersRoute);
 app.use((req, res, next) => {
-  return next(new HttpError(404, 'Page not found'))
+  return next(new HttpError("Page not found", 404));
 });
 
 app.use((error, req, res, next) => {
@@ -23,9 +24,11 @@ app.use((error, req, res, next) => {
   }
   return res
     .status(error.statusCode || 500)
-    .json({ message: error.message || 'Something went wrong, sorry'});
+    .json({ message: error.message || "Something went wrong, sorry" });
 });
 
-app.listen(8000, () => {
-  console.log("Server running on port 8000")
-})
+connectDB();
+const port = process.env.PORT || 8000;
+app.listen(port, () => {
+  console.log(`Server running on ${port} port`);
+});
