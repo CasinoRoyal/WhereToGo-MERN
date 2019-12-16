@@ -21,7 +21,7 @@ router
   .patch(placeUpdateValidator, runValidation, updatePlace)
   .delete(deletePlace);
 
-router.post("/", placeCreateValidator, runValidation, createPlace);
 router.get("/user/:userId", getPlacesByUserId);
+router.post("/", placeCreateValidator, runValidation, createPlace);
 
 module.exports = router;

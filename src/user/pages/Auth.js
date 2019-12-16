@@ -63,7 +63,7 @@ const Auth = () => {
 
     if (isLoginMode) {
       try {
-        await sendRequest(
+        const res = await sendRequest(
           'http://localhost:8000/api/users/signin', 
           'POST',
           JSON.stringify({
@@ -73,13 +73,13 @@ const Auth = () => {
           { 'Content-Type': 'application/json' }
         )
 
-        login();
+        login(res.user._id);
       } catch(err) {
         console.log(err);
       }
     } else {
       try {
-        await sendRequest(
+        const res = await sendRequest(
           'http://localhost:8000/api/users/signup', 
           'POST',
           JSON.stringify({
@@ -90,7 +90,7 @@ const Auth = () => {
           { 'Content-Type': 'application/json' }
         )
 
-        login();
+        login(res.user._id);
       } catch(err) {
         console.log(err);
       }

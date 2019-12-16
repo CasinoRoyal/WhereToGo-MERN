@@ -18,7 +18,10 @@ const Map = props => {
         defaultLayers.vector.normal.map,
         {
           zoom,
-          center
+          center: {
+            lat: center.Latitude,
+            lng: center.Longitude
+          }
         });
 
       }, [center, zoom]);

@@ -3,36 +3,24 @@ import React, { useEffect, useState, Fragment } from 'react';
 import UsersList from '../components/UsersList';
 import ErrorModal from '../../shared/components/UIElements/ErrorModal';
 import LoadingSpinner from '../../shared/components/UIElements/LoadingSpinner';
+import { useHttpClient } from '../../shared/hooks/http-hook';
 
 const Users = () => {
-  const [isLoading, setIsLoading] = useState(false);
-  const [error, setError] = useState(null);
+  const { isLoading, error, sendRequest, clearError } = useHttpClient();
   const [users, setUsers] = useState(null);
 
   useEffect(() => {
     (async function() {
-      setIsLoading(true);
       try {
-        const res = await fetch('http://localhost:8000/api/users');
-
-        if (!res.ok) {
-          throw new Error(res.message)
-        }
-        const data = await res.json();
+        const data = await sendRequest('http://localhost:8000/api/users');
         setUsers(data);
-      } catch(err) {
-
-      }
-      
-      setIsLoading(false);
+      } catch(err) {}      
     })();
-  }, []);
-
-  const errorHandler = () => (setError(null));
+  }, [sendRequest]);
 
   return(
     <Fragment>
-      <ErrorModal error={error} onCancel={errorHandler} />
+      <ErrorModal error={error} onCancel={clearError} />
       {isLoading && <LoadingSpinner asOverlay />}
       {!isLoading && users && <UsersList items={users} />}
     </Fragment>

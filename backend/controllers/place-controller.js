@@ -48,10 +48,9 @@ exports.createPlace = async (req, res, next) => {
       description: req.body.description,
       address: req.body.address,
       location: await getLocation(req.body.address),
-      image: req.body.image,
+      image: req.body.image || '',
       creator: req.body.creator
     });
-
     const user = await User.findById(req.body.creator);
 
     if(!user) {
@@ -110,9 +109,9 @@ exports.deletePlace = async (req, res, next) => {
     await place.creator.save({ session: sess });
     await sess.commitTransaction();
 
-    res.status(204).json({
+    res.status(200).json({
       status: 'success',
-      data: null
+      data: {}
     });
   } catch (err) {
     console.log(err)
