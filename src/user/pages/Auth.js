@@ -73,7 +73,7 @@ const Auth = () => {
           { 'Content-Type': 'application/json' }
         )
 
-        login(res.user._id);
+        login(res.user._id, res.token);
       } catch(err) {
         console.log(err);
       }
@@ -89,8 +89,8 @@ const Auth = () => {
           }),
           { 'Content-Type': 'application/json' }
         )
-
-        login(res.user._id);
+        console.log(res)
+        login(res.user._id, res.token);
       } catch(err) {
         console.log(err);
       }

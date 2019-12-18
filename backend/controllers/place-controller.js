@@ -85,6 +85,10 @@ exports.updatePlace = async (req, res, next) => {
       return next(new HttpError('Place not found', 404));
     }
 
+    if (place.creator.toString() !== req.user.id) {
+      return next(new HttpError('You do not have permission', 401));
+    }
+
     res.status(200).json({
       status: 'success',
       place
@@ -100,6 +104,10 @@ exports.deletePlace = async (req, res, next) => {
     const place = await Place.findById(req.params.placeId).populate('creator');
     if (!place) {
       return next(new HttpError('Place not found', 404));
+    }
+
+    if (place.creator.id !== req.user.id) {
+      return next(new HttpError('You do not have permission', 401));
     }
 
     const sess =  await mongoose.startSession();

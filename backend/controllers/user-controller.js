@@ -1,3 +1,5 @@
+const bcrypt = require("bcryptjs");
+const jwt = require("jsonwebtoken");
 const HttpError = require("../models/http-error");
 const User = require("../models/user");
 
@@ -10,19 +12,31 @@ exports.signup = async (req, res, next) => {
       return next(new HttpError('User with that email already exist', 400));
     }
 
+    const hashedPassword = await bcrypt.hash(password, 12);
+
     const newUser = new User({
       name,
       email,
-      password,
+      password: hashedPassword,
       places: [],
       image: image || ''
     });
-
     await newUser.save();
+
+    const token = jwt.sign(
+      {id: newUser._id, email: newUser.email}, 
+      process.env.JWT_SECRET_KEY,
+      {expiresIn: process.env.JWT_EXPIRES_IN}
+    );
 
     res.status(201).json({
       status: 'success',
-      user: newUser
+      token,
+      user: {
+        _id: newUser._id, 
+        email: newUser.email, 
+        name: newUser.name
+      }
     })
 
   } catch(err) {
@@ -37,13 +51,25 @@ exports.signin = async (req, res, next) => {
 
   try {
     const user = await User.findOne({ email });
-    if (!user || user.password !== password) {
+
+    if (!user || !(await bcrypt.compare(password, user.password))) {
       return next(new HttpError('Email and/or password are wrong', 401));
     }
 
+    const token = jwt.sign(
+      {id: user._id, email: user.email}, 
+      process.env.JWT_SECRET_KEY,
+      {expiresIn: process.env.JWT_EXPIRES_IN}
+    );    
+
     res.status(200).json({
       status: 'success',
-      user
+      token,
+      user: {
+        _id: user._id, 
+        email: user.email, 
+        name: user.name        
+      }
     })
 
   } catch(err) {

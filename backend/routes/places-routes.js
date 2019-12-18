@@ -12,16 +12,17 @@ const {
   placeUpdateValidator
 } = require("../validators/place-validator");
 const { runValidation } = require("../validators/runValidate");
+const { protect } = require("../middlewares/protect");
 
 const router = express.Router();
 
 router
   .route("/:placeId")
   .get(getPlaceById)
-  .patch(placeUpdateValidator, runValidation, updatePlace)
-  .delete(deletePlace);
+  .patch(protect, placeUpdateValidator, runValidation, updatePlace)
+  .delete(protect, deletePlace);
 
 router.get("/user/:userId", getPlacesByUserId);
-router.post("/", placeCreateValidator, runValidation, createPlace);
+router.post("/", protect, placeCreateValidator, runValidation, createPlace);
 
 module.exports = router;

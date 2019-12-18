@@ -12,7 +12,7 @@ import './PlaceItem.css';
 
 const PlaceItem = props => {
   const { isLoading, error, sendRequest, clearError } = useHttpClient();
-  const { isLogged, userId } = useContext(AuthContext);
+  const { userId, token } = useContext(AuthContext);
   const [showMap, setShowMap] = useState(false);
   const [showConfirmDelete, setConfirmDelete] = useState(false);
 
@@ -26,7 +26,11 @@ const PlaceItem = props => {
     try {
       await sendRequest(
         `http://localhost:8000/api/places/${props.id}`,
-        'DELETE'
+        'DELETE',
+        null,
+        {
+          'Authorization': 'Bearer ' + token
+        }
       );
       props.onDelete(props.id);
     } catch (err) {}
