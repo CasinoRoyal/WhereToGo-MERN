@@ -1,4 +1,4 @@
-import React, { useState, useCallback, useEffect } from "react";
+import React, { useState, useCallback, useEffect, Suspense } from "react";
 import {
   BrowserRouter as Router,
   Route,
@@ -7,12 +7,14 @@ import {
 } from "react-router-dom";
 
 import Users from "./user/pages/Users";
-import Auth from "./user/pages/Auth";
-import NewPlace from "./places/pages/NewPlace";
-import UserPlaces from "./places/pages/UserPlaces";
-import UpdatePlace from "./places/pages/UpdatePlace";
 import MainNavigation from "./shared/components/Navigation/MainNavigation";
 import { AuthContext } from "./shared/context/auth-context";
+import LoadingSpinner from "./shared/components/UIElements/LoadingSpinner";
+
+const Auth = React.lazy(() => import("./user/pages/Auth"));
+const NewPlace = React.lazy(() => import("./places/pages/NewPlace"));
+const UserPlaces = React.lazy(() => import("./places/pages/UserPlaces"));
+const UpdatePlace = React.lazy(() => import("./places/pages/UpdatePlace"));
 
 let logoutTimer;
 
@@ -49,12 +51,13 @@ const App = () => {
 
   useEffect(() => {
     if (token && tokenExpirationTimer) {
-      const remainingTime = tokenExpirationTimer.getTime() - new Date().getTime();
+      const remainingTime =
+        tokenExpirationTimer.getTime() - new Date().getTime();
       logoutTimer = setTimeout(logout, remainingTime);
     } else {
-      clearTimeout(logoutTimer)
+      clearTimeout(logoutTimer);
     }
-  }, [token, logout, tokenExpirationTimer])
+  }, [token, logout, tokenExpirationTimer]);
 
   useEffect(() => {
     const userData = JSON.parse(localStorage.getItem("userData"));
@@ -109,7 +112,15 @@ const App = () => {
     >
       <Router>
         <MainNavigation />
-        <main>{routes}</main>
+        <main>
+          <Suspense fallback={() => (
+            <div className="center">
+              <LoadingSpinner asOverlay />
+            </div>
+          )}>
+            {routes}
+          </Suspense>
+        </main>
       </Router>
     </AuthContext.Provider>
   );

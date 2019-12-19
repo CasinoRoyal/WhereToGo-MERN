@@ -25,7 +25,7 @@ const PlaceItem = props => {
     closeConfirmDeleteHandler();
     try {
       await sendRequest(
-        `http://localhost:8000/api/places/${props.id}`,
+        `${process.env.REACT_APP_BACKEND_URL}/places/${props.id}`,
         'DELETE',
         null,
         {

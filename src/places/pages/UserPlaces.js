@@ -15,7 +15,7 @@ const UserPlaces = () => {
     (async function() {
       try{
         const res = await sendRequest(
-          `http://localhost:8000/api/places/user/${userId}`
+          `${process.env.REACT_APP_BACKEND_URL}/places/user/${userId}`
         );
         setLoadedPlaces(res.places);
 
