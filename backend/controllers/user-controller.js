@@ -19,7 +19,7 @@ exports.signup = async (req, res, next) => {
       email,
       password: hashedPassword,
       places: [],
-      image: image || ''
+      image: `${process.env.CLIENT_URL}/${req.file.path}`
     });
     await newUser.save();
 

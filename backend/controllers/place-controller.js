@@ -48,16 +48,16 @@ exports.createPlace = async (req, res, next) => {
       description: req.body.description,
       address: req.body.address,
       location: await getLocation(req.body.address),
-      image: req.body.image || '',
-      creator: req.body.creator
+      image: `${process.env.CLIENT_URL}/${req.file.path}` || '',
+      creator: req.user.id
     });
-    const user = await User.findById(req.body.creator);
+    const user = await User.findById(req.user.id);
 
     if(!user) {
      return next(new HttpError("User not found", 404));
     }
 
-    const sess =  await mongoose.startSession();
+    const sess = await mongoose.startSession();
     sess.startTransaction();
     await place.save({ session: sess });
     user.places.push(place);

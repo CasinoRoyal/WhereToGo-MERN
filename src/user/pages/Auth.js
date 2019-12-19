@@ -5,6 +5,7 @@ import ErrorModal from '../../shared/components/UIElements/ErrorModal';
 import LoadingSpinner from '../../shared/components/UIElements/LoadingSpinner';
 import Input from '../../shared/components/FormElements/Input';
 import Button from '../../shared/components/FormElements/Button';
+import ImageUpload from '../../shared/components/FormElements/ImageUpload';
 import { useForm } from '../../shared/hooks/form-hook';
 import { useHttpClient } from '../../shared/hooks/http-hook';
 import { AuthContext } from '../../shared/context/auth-context';
@@ -39,7 +40,8 @@ const Auth = () => {
       setFormData(
         {
           ...formState.inputs,
-          name: undefined
+          name: undefined,
+          image: undefined
         },
         formState.inputs.email.isValid && formState.inputs.password.isValid
       );
@@ -49,6 +51,10 @@ const Auth = () => {
           ...formState.inputs,
           name: {
             value: '',
+            isValid: false
+          },
+          image: {
+            value: null,
             isValid: false
           }
         },
@@ -79,17 +85,17 @@ const Auth = () => {
       }
     } else {
       try {
+        const formData = new FormData();
+        formData.append('email', formState.inputs.email.value);
+        formData.append('name', formState.inputs.name.value);
+        formData.append('password', formState.inputs.password.value);
+        formData.append('image', formState.inputs.image.value);
+
         const res = await sendRequest(
           'http://localhost:8000/api/users/signup', 
           'POST',
-          JSON.stringify({
-            name: formState.inputs.name.value,
-            email: formState.inputs.email.value,
-            password: formState.inputs.password.value
-          }),
-          { 'Content-Type': 'application/json' }
+          formData
         )
-        console.log(res)
         login(res.user._id, res.token);
       } catch(err) {
         console.log(err);
@@ -105,6 +111,13 @@ const Auth = () => {
         <h2>Login Required</h2>
         <hr />
         <form onSubmit={submitHandler}>
+          {!isLoginMode && 
+            <ImageUpload 
+              center 
+              id="image" 
+              onInput={handleInputChange} 
+              errorText="Please provide an image." 
+            />}
           {!isLoginMode && (
               <Input
                 element="input"

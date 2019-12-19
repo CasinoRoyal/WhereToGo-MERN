@@ -13,6 +13,7 @@ const {
 } = require("../validators/place-validator");
 const { runValidation } = require("../validators/runValidate");
 const { protect } = require("../middlewares/protect");
+const fileUpload = require("../middlewares/file-upload");
 
 const router = express.Router();
 
@@ -23,6 +24,13 @@ router
   .delete(protect, deletePlace);
 
 router.get("/user/:userId", getPlacesByUserId);
-router.post("/", protect, placeCreateValidator, runValidation, createPlace);
+router.post(
+  "/",
+  fileUpload.single("image"),
+  protect,
+  placeCreateValidator,
+  runValidation,
+  createPlace
+);
 
 module.exports = router;
